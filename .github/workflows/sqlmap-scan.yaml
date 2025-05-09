@@ -19,24 +19,14 @@ jobs:
           --health-cmd "curl -f http://localhost:1337/_health || exit 1"
           --health-interval 10s
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Start Strapi on sqlmapnet
+        run: docker run -d --name strapi-container --network host strapi-app
 
-      - name: Verify Strapi container
-        run: |
-          docker ps
-          curl -v http://localhost:1337/_health
-
-      - name: SQLMap Scan
+      - run: sleep 10
+      - run: curl -X GET http://localhost:1337/admin/auth/register-admin
+      
+      - name: Scan with sqlmap
         uses: thereisnotime/action-sqlmap@master
         with:
-          url: "http://strapi:1337/admin/auth/register-admin"
-          additional_args: |
-            --batch 
-            --crawl=2 
-            --random-agent 
-            --forms 
-            --level=5 
-            --risk=3 
-            --dbms=postgresql
+          url: "http://localhost:1337/admin/auth/register-admin"
+          additional_args: "--batch --crawl=2 --random-agent --forms --level=5 --risk=3"
