@@ -1,7 +1,7 @@
 name: Build, Scan, SQLMap Scan
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   scan_sqlmap:
@@ -9,23 +9,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build image
+      - name: Build Strapi image
         run: docker build -t strapi-app .
-      
-      - name: Create network
+
+      - name: Create Docker network
         run: docker network create sqlmapnet
 
-      - name: Start Strapi on sqlmapnet
-        run: docker run -d --name strapi-container --network sqlmapnet strapi-app
-
-      - run: docker ps
-      - run: ip addr
-
+      - name: Start Strapi container
+        run: |
+          docker run -d \
+            --name strapi-container \
+            --network sqlmapnet \
+            strapi-app
       - run: sleep 10
-      - run: curl -X GET http://172.17.0.1:1337/admin/auth/register-admin
-      
-      - name: Scan with sqlmap
-        uses: thereisnotime/action-sqlmap@master
-        with:
-          url: "http://localhost:1337/admin/auth/register-admin"
-          additional_args: "--batch --crawl=2 --random-agent --forms --level=5 --risk=3"
+
+      - name: Verify connectivity
+        run: |
+          curl -f http://strapi-container:1337/admin/auth/register-admin
+          
+      - name: Run SQLMap scan
+        run: |
+          docker run --rm -it \
+            --network sqlmapnet \
+            paoloo/sqlmap \
+            --batch \
+            --crawl=2 \
+            --random-agent \
+            --forms \
+            --level=5 \
+            --risk=3 \
+            --url http://strapi-container:1337/admin/auth/register-admin
