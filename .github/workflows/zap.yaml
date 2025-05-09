@@ -1,31 +1,22 @@
-name: Build, Scan, and DAST
-on:
-  push:
-    branches: [main]
-
 jobs:
   security-scanning:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Build image
         run: docker build -t strapi-app .
 
-      - name: Start Strapi container on host network
-        run: |
-          docker run -d --name strapi-container --network host strapi-app
-          
-      - name: Wait for Strapi to be ready
-        run: |
-          sleep 10
+      - name: Create network
+        run: docker network create zapnet
+
+      - name: Start Strapi on zapnet
+        run: docker run -d --name strapi-container --network zapnet strapi-app
+      - run: sleep 10
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.12.0
         with:
-          target: 'http://localhost:1337'
-          rules_file_name: 'stapi-scan-rules'
-          alert_on_risk: 3  # Medium and above
+          target: 'http://strapi-container:1337'
+          alert_on_risk: 3
           fail_action: true
-          cmd_options: '-I'
