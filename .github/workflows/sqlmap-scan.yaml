@@ -15,6 +15,9 @@ jobs:
       - name: Create network
         run: docker network create sqlmapnet
 
+      - name: Start Strapi on sqlmapnet
+        run: docker run -d --name strapi-container --network sqlmapnet strapi-app
+
       - run: sleep 10
 
       - name: Scan with sqlmap
