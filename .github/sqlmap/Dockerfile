@@ -1,10 +1,13 @@
-# .github/sqlmap/Dockerfile
-FROM alpine:3.1
+FROM python:3-alpine AS sqlmap
 
-LABEL maintainer="Paolo Oliveira <paolo@fisica.ufc.br>"
+# Install Git to clone the SQLMap repo
+RUN apk add --no-cache git
 
-RUN apk add --no-cache python git                  \
- && git clone https://github.com/sqlmapproject/sqlmap.git /sqlmap
+# Clone SQLMap into the image
+RUN git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git
 
+# Set working directory
 WORKDIR /sqlmap
-ENTRYPOINT ["python", "sqlmap.py"]
+
+# Ensure entrypoint runs SQLMap with Python 3
+ENTRYPOINT ["python3", "sqlmap.py"]
