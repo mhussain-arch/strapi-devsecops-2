@@ -9,12 +9,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1. Build Strapi image
       - name: Build Strapi image
         run: docker build -t strapi-app .
 
-      - name: Create Docker network
+      # 2. Build SQLMap image locally
+      - name: Build SQLMap image
+        run: |
+          docker build \
+            -t local-sqlmap \
+            -f .github/sqlmap/Dockerfile \
+            .
+
+      # 3. Create and use a custom network
+      - name: Create network
         run: docker network create sqlmapnet
 
+      # 4. Start Strapi on that network
       - name: Start Strapi container
         run: |
           docker run -d \
@@ -22,16 +33,17 @@ jobs:
             --network sqlmapnet \
             strapi-app
       - run: sleep 10
-          
+
+      # 5. Verify Strapi is reachable by hostname
+      - name: Verify connectivity
+        run: |
+          curl -f http://strapi-container:1337/admin/auth/register-admin
+
+      # 6. Run SQLMap from the built image on the same network
       - name: Run SQLMap scan
         run: |
           docker run --rm \
             --network sqlmapnet \
-            paoloo/sqlmap \
-            --batch \
-            --crawl=2 \
-            --random-agent \
-            --forms \
-            --level=5 \
-            --risk=3 \
-            --url http://strapi-container:1337/admin/auth/register-admin
+            local-sqlmap \
+            -u http://strapi-container:1337/admin/auth/register-admin \
+            --batch --crawl=2 --random-agent --forms --level=5 --risk=3
