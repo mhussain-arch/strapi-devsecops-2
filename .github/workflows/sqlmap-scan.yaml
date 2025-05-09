@@ -1,25 +1,42 @@
-name: Build, Scan, SQLMap Scan
+name: SQLMap Security Scans
 on:
   push:
     branches: [main]
 
 jobs:
-  scan_sqlmap:
+  sqlmap-scan:
     runs-on: ubuntu-latest
+    services:
+      strapi:
+        # Use locally built image through build context
+        image: strapi-app
+        build:
+          context: .
+          dockerfile: Dockerfile
+        ports:
+          - 1337:1337
+        options: >-
+          --health-cmd "curl -f http://localhost:1337/_health || exit 1"
+          --health-interval 10s
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Build image
-        run: docker build -t strapi-app .
+      - name: Verify Strapi container
+        run: |
+          docker ps
+          curl -v http://localhost:1337/_health
 
-      - name: Start Strapi on sqlmapnet
-        run: docker run -d --name strapi-container --network "host" strapi-app
-
-      - run: sleep 10
-
-      - name: Scan with sqlmap
+      - name: SQLMap Scan
         uses: thereisnotime/action-sqlmap@master
         with:
-          url: "http://localhost:1337/admin/auth/register-admin"
-          additional_args: "--batch --crawl=2 --random-agent --forms --level=5 --risk=3"
-
+          url: "http://strapi:1337/admin/auth/register-admin"
+          additional_args: |
+            --batch 
+            --crawl=2 
+            --random-agent 
+            --forms 
+            --level=5 
+            --risk=3 
+            --dbms=postgresql
