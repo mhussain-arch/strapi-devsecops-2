@@ -1,23 +1,16 @@
-name: SQLMap Security Scans
+name: Build, Scan, SQLMap Scan
 on:
   push:
     branches: [main]
 
 jobs:
-  sqlmap-scan:
+  scan_sqlmap:
     runs-on: ubuntu-latest
-    services:
-      strapi:
-        # Use locally built image through build context
-        image: strapi-app
-        build:
-          context: .
-          dockerfile: Dockerfile
-        ports:
-          - 1337:1337
-        options: >-
-          --health-cmd "curl -f http://localhost:1337/_health || exit 1"
-          --health-interval 10s
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t strapi-app .
 
       - name: Start Strapi on sqlmapnet
         run: docker run -d --name strapi-container --network host strapi-app
