@@ -7,10 +7,14 @@ jobs:
   scan_sqlmap:
     runs-on: ubuntu-latest
     steps:
-      - name: Start Strapi on sqlmapnet
-        run: |
-          docker network create sqlmapnet
-          docker run -d --name strapi-container --network sqlmapnet strapi-app
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t strapi-app .
+
+      - name: Create network
+        run: docker network create sqlmapnet
+
       - run: sleep 10
 
       - name: Run SQLMap in Docker
