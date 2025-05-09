@@ -34,11 +34,6 @@ jobs:
             strapi-app
       - run: sleep 10
 
-      # 5. Verify Strapi is reachable by hostname
-      - name: Verify connectivity
-        run: |
-          curl -f http://strapi-container:1337/admin/auth/register-admin
-
       # 6. Run SQLMap from the built image on the same network
       - name: Run SQLMap scan
         run: |
