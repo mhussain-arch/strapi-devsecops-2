@@ -53,7 +53,7 @@ jobs:
       # 6. Upload or publish the report (optional)
       - name: Upload Dastardly report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dastardly-report
           path: dastardly-strapi-report.xml
