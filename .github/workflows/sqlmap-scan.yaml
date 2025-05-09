@@ -22,7 +22,7 @@ jobs:
       - run: ip addr
 
       - run: sleep 10
-      - run: curl -X GET http://localhost:1337/admin/auth/register-admin
+      - run: curl -X GET http://172.17.0.1:1337/admin/auth/register-admin
       
       - name: Scan with sqlmap
         uses: thereisnotime/action-sqlmap@master
