@@ -13,16 +13,13 @@ jobs:
       - name: Build Docker image
         run: docker build -t strapi-app .
 
-      - name: Start Strapi container
+      - name: Start Strapi container on host network
         run: |
-          docker run -d \
-            --name strapi-container \
-            -p 1337:1337 \
-            strapi-app
+          docker run -d --name strapi-container --network host strapi-app
           
       - name: Wait for Strapi to be ready
         run: |
-          sleep 5
+          sleep 10
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.12.0
