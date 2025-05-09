@@ -11,9 +11,12 @@ jobs:
 
       - name: Build image
         run: docker build -t strapi-app .
+      
+      - name: Create network
+        run: docker network create sqlmapnet
 
       - name: Start Strapi on sqlmapnet
-        run: docker run -d --name strapi-container --network host strapi-app
+        run: docker run -d --name strapi-container --network sqlmapnet strapi-app
 
       - run: sleep 10
       - run: curl -X GET http://localhost:1337/admin/auth/register-admin
