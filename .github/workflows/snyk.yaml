@@ -1,0 +1,14 @@
+# snyk.yaml for SCA
+name: Snyk NodeJS Workflow
+on: push
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          token: ${{ secrets.WRITE_PAT }}
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
