@@ -7,20 +7,17 @@ jobs:
   scan_sqlmap:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t strapi-app .
-
-      - name: Create network
-        run: docker network create sqlmapnet
-
-      - name: Start Strapi container on sqlmapnet
-        run: docker run -d --name strapi-container --network sqlmapnet strapi-app
-      - run: sleep 10
+      - name: Start Strapi on host network
+        run: |
+          docker run -d \
+            --name strapi-container \
+            --network host \
+            strapi-app
+      - name: Wait for Strapi
+        run: sleep 10
 
       - name: Scan with sqlmap
         uses: thereisnotime/action-sqlmap@master
         with:
-          url: "http://strapi-container:1337/admin/auth/register-admin"
+          url: "http://127.0.0.1:1337/admin/auth/register-admin"
           additional_args: "--batch --crawl=2 --random-agent --forms --level=5 --risk=3"
