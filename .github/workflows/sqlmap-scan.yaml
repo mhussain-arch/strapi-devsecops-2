@@ -1,7 +1,7 @@
-- name: Build, Scan, SQLMap Scan
-  on:
-    push:
-      branches: [main]
+name: Build, Scan, SQLMap Scan
+on:
+  push:
+    branches: [main]
 
 jobs:
   scan_sqlmap:
