@@ -18,6 +18,9 @@ jobs:
       - name: Start Strapi on sqlmapnet
         run: docker run -d --name strapi-container --network sqlmapnet strapi-app
 
+      - run: docker ps
+      - run: ip addr
+
       - run: sleep 10
       - run: curl -X GET http://localhost:1337/admin/auth/register-admin
       
