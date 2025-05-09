@@ -19,8 +19,8 @@ jobs:
         run: docker run -d --name strapi-container --network sqlmapnet strapi-app
 
       - run: sleep 10
-      - run: docker ps
-      - run: ip addr
+      - run: docker ps # check for running containers
+      - run: ip addr # check for network interfaces
       
       - name: Scan with sqlmap
         uses: thereisnotime/action-sqlmap@master
