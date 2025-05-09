@@ -22,10 +22,6 @@ jobs:
             --network sqlmapnet \
             strapi-app
       - run: sleep 10
-
-      - name: Verify connectivity
-        run: |
-          curl -f http://strapi-container:1337/admin/auth/register-admin
           
       - name: Run SQLMap scan
         run: |
