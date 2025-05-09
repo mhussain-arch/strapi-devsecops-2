@@ -22,7 +22,7 @@ jobs:
           
       - name: Wait for Strapi to be ready
         run: |
-          until docker logs strapi-container 2>&1 | grep "Server listening"; do
+          until docker logs strapi-container 2>&1 | grep "Strapi started successfully"; do
             echo "Waiting for Strapi to start..."
             sleep 5
           done
