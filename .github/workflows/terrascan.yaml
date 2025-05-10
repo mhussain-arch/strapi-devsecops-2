@@ -22,7 +22,7 @@ jobs:
         uses: tenable/terrascan-action@v1.4.1
         with:
           iac_type: terraform
-          iac_dir: ./devsecops/milestone-3/terraform
+          iac_dir: ./
           only_warn: true                # Ensures the workflow doesn't fail
           sarif_upload: true            # Enables GitHub Security Dashboard integration
           output_format: sarif
