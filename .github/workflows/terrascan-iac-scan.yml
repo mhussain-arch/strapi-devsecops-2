@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Terrascan CLI
         run: |
@@ -21,17 +21,18 @@ jobs:
           chmod +x terrascan
           sudo mv terrascan /usr/local/bin/
 
-      - name: Initialize Terrascan
-        run: terrascan init
+      - name: Initialize Terrascan (optional but recommended)
+        run: terrascan init || echo "Terrascan init skipped (not required for all scans)"
 
-      - name: Run Terrascan Scan
+      - name: Run Terrascan Scan on all IaC files
         run: |
           terrascan scan \
             -d . \
             --output sarif \
-            --non-recursive > terrascan-results.sarif
+            --policy-type all > terrascan-results.sarif
 
-      - name: Upload SARIF file to GitHub
+      - name: Upload SARIF file to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: terrascan-results.sarif
+          token: ${{ secrets.GITHUB_TOKEN }}
