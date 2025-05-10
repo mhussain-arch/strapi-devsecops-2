@@ -15,7 +15,7 @@ jobs:
       - name: Run SQLMap scan
         uses: thereisnotime/action-sqlmap@master
         with:
-          url: 'https://strapi-devsecops-2.onrender.com'
+          url: 'https://strapi-devsecops-2.onrender.com/admin/auth/register-admin'
           additional_args: |
             --batch            # Non-interactive mode
             --crawl=1          # Discover links up to depth 1
