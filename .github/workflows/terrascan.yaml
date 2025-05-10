@@ -29,6 +29,6 @@ jobs:
           output_file: terrascan-output/terrascan.sarif
 
       - name: Upload SARIF file to GitHub
-        uses: github/codeql-action/upload-sarif@3
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: terrascan-output/terrascan.sarif
