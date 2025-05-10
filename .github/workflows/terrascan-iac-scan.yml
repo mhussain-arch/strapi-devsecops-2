@@ -1,0 +1,37 @@
+name: Terrascan IaC Security Scan
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  terrascan:
+    name: Run Terrascan Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Terrascan CLI
+        run: |
+          curl -L https://github.com/tenable/terrascan/releases/latest/download/terrascan_linux_amd64 -o terrascan
+          chmod +x terrascan
+          sudo mv terrascan /usr/local/bin/
+
+      - name: Initialize Terrascan
+        run: terrascan init
+
+      - name: Run Terrascan Scan
+        run: |
+          terrascan scan \
+            -d . \
+            --output sarif \
+            --non-recursive > terrascan-results.sarif
+
+      - name: Upload SARIF file to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: terrascan-results.sarif
