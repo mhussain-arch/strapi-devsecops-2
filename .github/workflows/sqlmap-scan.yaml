@@ -1,0 +1,24 @@
+name: SQLMap DAST Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sqlmap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SQLMap scan
+        uses: thereisnotime/action-sqlmap@v1
+        with:
+          url: 'https://strapi-devsecops-2.onrender.com'
+          additional_args: |
+            --batch            # Non-interactive mode
+            --crawl=1          # Discover links up to depth 1
+            --random-agent     # Rotate User-Agent headers
+            --level=3          # Scan intensity level (1-5)
+            --risk=2           # Risk factor (1-3)
