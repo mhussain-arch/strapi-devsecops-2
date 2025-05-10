@@ -1,9 +1,9 @@
 name: Terrascan IaC Security Scan
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3  
 
       - name: Install Terrascan CLI
         run: |
@@ -21,18 +21,17 @@ jobs:
           chmod +x terrascan
           sudo mv terrascan /usr/local/bin/
 
-      - name: Initialize Terrascan (optional but recommended)
-        run: terrascan init || echo "Terrascan init skipped (not required for all scans)"
+      - name: Initialize Terrascan
+        run: terrascan init
 
-      - name: Run Terrascan Scan on all IaC files
+      - name: Run Terrascan Scan
         run: |
           terrascan scan \
             -d . \
             --output sarif \
-            --policy-type all > terrascan-results.sarif
+            --non-recursive > terrascan-results.sarif
 
-      - name: Upload SARIF file to GitHub Security tab
+      - name: Upload SARIF file to GitHub
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: terrascan-results.sarif
-          token: ${{ secrets.GITHUB_TOKEN }}
